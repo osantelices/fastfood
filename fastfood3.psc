@@ -3,12 +3,13 @@ Proceso Fastfood
 	//opcion: 
 	//contador: 
 	//i: 
-	Definir opcion,contador,i como entero;
+	Definir contador,i como entero;
+
 	//se puede tener 5 clientes a la vez
 	//clientes[] guarda los nombres de los clientes
 	//se inicia con valor null
 	Dimension clientes[5];
-	Definir clientes Como Caracter;
+	Definir clientes, opcion Como Caracter;
 	//inicializar array clientes con null
 	para i <- 0 hasta 4 Con Paso 1 hacer 
 		clientes[i]="null";
@@ -28,16 +29,21 @@ Proceso Fastfood
 		Repetir
 			Escribir "1)vender 0)cerrar";
 			Leer opcion;
-			si opcion!=1 y opcion!=0 Entonces
+			si opcion!="1" y opcion!="0" Entonces
 				Escribir "escriba opción valida";
 			FinSi
-			si opcion=1 Entonces
+			si opcion="1" Entonces
 				vender(orden,clientes,contador);
-				contador=contador+1;
+				si clientes[contador]!="null" Entonces
+					contador=contador+1;
+				FinSi
 			FinSi
-		Hasta Que opcion=0 o contador=5 //correspondiente al numero de clientes
+			Si ~validarEntero(opcion)Entonces
+				Escribir "Ingrese un valor numérico";
+			FinSi
+		Hasta Que (opcion="0" o contador=5)//correspondiente al numero de clientes
 		//agregar opcion para hacer display de informacion con otra opcion: 2)mostrar informacion
-	Hasta Que opcion=0;
+	Hasta Que opcion="0";
 	escribirArrayN(clientes,5);
 	escribirTablaNx2xM(orden,9,5);
 	display(orden, clientes, 9,5);
@@ -54,7 +60,7 @@ Funcion escribirArrayN(array,N)
 FinFuncion
 Funcion vender(orden,cliente,k)
 	Dimension mensaje[9],tiempo[6];
-	Definir mensaje,nombre como cadena;
+	Definir mensaje,nombre, auxorden como cadena;
 	Definir i,tiempo como entero;
 	mensaje[0]="¿Quiere mayonesa? 1)si 0)no";
 	mensaje[1]="¿Quiere lechuga? 1)si 0)no";
@@ -73,11 +79,24 @@ Funcion vender(orden,cliente,k)
 	tiempo[4]=3;
 	tiempo[5]=5;
 	//Arreglo para una hamburguesa de un cliente
+	Definir setvalue como logico;
 	Para i <- 0 hasta 8 Con Paso 1 Hacer
 		si i<4 entonces
-			Repetir
-				Escribir mensaje[i];
-				leer orden[i,0,k];
+			Repetir	
+				
+				//Validacion de caracteres
+				Repetir					
+					Escribir mensaje[i];
+					leer auxorden;				
+					si validarEntero(auxorden) Entonces
+						orden[i,0,k]=ConvertirANumero(auxorden);
+						setvalue = Verdadero;
+					SiNo
+						Escribir "Ingrese un valor numérico";
+						setvalue=Falso;
+					FinSi
+				Hasta Que setvalue=Verdadero
+				
 				//validación
 				si orden[i,0,k]=1 Entonces
 					orden[i,1,k]=tiempo[i];
@@ -88,9 +107,20 @@ Funcion vender(orden,cliente,k)
 			Hasta Que orden[i,0,k]=1 o orden[i,0,k]=0;
 		FinSi
 		si i=4 o i=7 entonces;
-			Repetir
-				Escribir mensaje[i];
-				leer orden[i,0,k];
+			Repetir				
+				//validacion de caracteres
+				Repetir					
+					Escribir mensaje[i];
+					leer auxorden;				
+					si validarEntero(auxorden) Entonces
+						orden[i,0,k]=ConvertirANumero(auxorden);
+						setvalue = Verdadero;
+					SiNo
+						Escribir "Ingrese un valor numérico";
+						setvalue=Falso;
+					FinSi
+				Hasta Que setvalue=Verdadero
+				
 				//validación
 				si orden[i,0,k]!=0 Y i=4 Entonces
 					orden[i,1,k]=tiempo[i];
@@ -106,24 +136,57 @@ Funcion vender(orden,cliente,k)
 		FinSi
 		Si i=5 o i=6 entonces
 			Repetir
-				Escribir mensaje[i];
-				Leer orden[i,0,k];
+				Repetir					
+					Escribir mensaje[i];
+					leer auxorden;				
+					si validarEntero(auxorden) Entonces
+						orden[i,0,k]=ConvertirANumero(auxorden);
+						setvalue = Verdadero;
+					SiNo
+						Escribir "Ingrese un valor numérico";
+						setvalue=Falso;
+					FinSi
+				Hasta Que setvalue=Verdadero
 			Hasta Que orden[i,0,k]>0
+			si i=6 Entonces
+				Escribir "El total a pagar es ", orden[5,0,k]*orden[6,0,k];
+				Escribir "------------------------";
+			FinSi
+			
 		FinSi
 		si i=8 Entonces
 			si orden[7,0,k]=3 Entonces
 				Repetir
-					Escribir mensaje[i];
-					Leer orden[i,0,k];
-				Hasta Que orden[i,0,k]>0
+					Repetir					
+						Escribir mensaje[i];
+						leer auxorden;				
+						si validarEntero(auxorden) Entonces
+							orden[i,0,k]=ConvertirANumero(auxorden);
+							setvalue = Verdadero;
+						SiNo
+							Escribir "Ingrese un valor numérico";
+							setvalue=Falso;
+						FinSi
+					Hasta Que setvalue=Verdadero
+					
+					Si orden[i,0,k]<(orden[5,0,k]*orden[6,0,k]) Entonces
+						orden[i,0,k]=0;
+						i=6;
+						Escribir "El monto ingresado es menor al costo de sus productos. Sera redirigido al metodo de pago";
+					FinSi
+				Hasta Que orden[i,0,k]>(orden[5,0,k]*orden[6,0,k]) o i=6
+			SiNo
+				orden[i,0,k]=(orden[5,0,k]*orden[6,0,k]);
 			FinSi
 		FinSi
 		
 	FinPara
-	si orden[5,0,k]!=0 Entonces
+	si orden[7,0,k]!=0 Entonces
 		Escribir "Nombre cliente";
 		leer nombre;
 		cliente[k]=nombre;
+	SiNo
+		resetear(orden, k);
 	FinSi	
 	
 	
@@ -228,7 +291,7 @@ Funcion display(array,cliente,La,Lc)
 				Escribir "Pedido: ",cliente[i];
 				Escribir "Hamburguesa: ", ingredientes(array,i);
 				Escribir "cantidad: ", cantidad;
-				Escribir "Tiempo de espera: ", tiempok, "segundos";
+				Escribir "Tiempo de espera: ", (tiempok*cantidad), " segundos";
 				si t>=tiempok Entonces
 					estado="listo";
 				SiNo
@@ -250,4 +313,45 @@ Funcion display(array,cliente,La,Lc)
 		
 	Hasta Que t=tmax+1 
 	
+FinFuncion
+
+//num: numero ingresado como caracter
+Funcion bool<-validarEntero(num)
+	Definir bool como logico;
+	Definir i,j Como Entero;
+	i=0;
+	Definir aux,auxnum como caracter;
+	Para j<-0 hasta Longitud(num)-1 Con Paso 1 Hacer
+		i=0;
+		Repetir
+			aux=subcadena(num,j,j);
+			auxnum=convertiratexto(i);
+			//Escribir aux," ",auxnum;
+			si aux=auxnum entonces
+				bool=Verdadero;
+				si j!=longitud(num)-1 Entonces
+					j=j+1;
+					i=0;
+				SiNo
+					i=10;
+				FinSi				
+			SiNo
+				bool=Falso;
+				i=i+1;
+			FinSi
+			//Escribir i;
+		Hasta Que i=10
+		si ~bool Entonces
+			j=Longitud(num);
+		FinSi
+	FinPara
+FinFuncion
+
+//resetea valores de un pedido cancelado
+Funcion resetear(array,k)
+	Definir i Como Entero;
+	para i<-0 hasta 8 Con Paso 1 Hacer
+		array[i,0,k]=0;
+		array[i,1,k]=0;
+	FinPara
 FinFuncion
