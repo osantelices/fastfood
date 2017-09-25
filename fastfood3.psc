@@ -45,8 +45,10 @@ Proceso Fastfood
 		//agregar opcion para hacer display de informacion con otra opcion: 2)mostrar informacion
 	Hasta Que opcion="0";
 	escribirArrayN(clientes,5);
-	escribirTablaNx2xM(orden,9,5);
+	escribirTablaNx2xM(orden,9,5);	
+	//Esperar Tecla;
 	display(orden, clientes, 9,5);
+	
 FinProceso
 //hace un display de información que contiene un array pedido
 
@@ -173,6 +175,7 @@ Funcion vender(orden,cliente,k)
 						orden[i,0,k]=0;
 						i=6;
 						Escribir "El monto ingresado es menor al costo de sus productos. Sera redirigido al metodo de pago";
+						Escribir "-----------------------------------------------------";
 					FinSi
 				Hasta Que orden[i,0,k]>(orden[5,0,k]*orden[6,0,k]) o i=6
 			SiNo
