@@ -1,15 +1,16 @@
 Proceso Fastfood
+	
 	//auxiliares para iniciar programa
 	//opcion: 
 	//contador: 
 	//i: 
 	Definir contador,i como entero;
-
+	
 	//se puede tener 5 clientes a la vez
 	//clientes[] guarda los nombres de los clientes
 	//se inicia con valor null
 	Dimension clientes[5];
-	Definir clientes, opcion Como Caracter;
+	Definir clientes, opcion, finish Como Caracter;
 	//inicializar array clientes con null
 	para i <- 0 hasta 4 Con Paso 1 hacer 
 		clientes[i]="null";
@@ -24,42 +25,51 @@ Proceso Fastfood
 	//inicializar array orden con ceros
 	inicializarM(orden,9,2,5);
 	
-	Repetir
-		contador=0;
+	Repetir	
 		Repetir
-			Escribir "1)vender 0)cerrar";
-			Leer opcion;
-			si opcion!="1" y opcion!="0" Entonces
-				Escribir "escriba opción valida";
-			FinSi
-			si opcion="1" Entonces
-				vender(orden,clientes,contador);
-				si clientes[contador]!="null" Entonces
-					contador=contador+1;
+			contador=0;
+			Repetir
+				Escribir "1)vender 0)cerrar";
+				Leer opcion;
+				si opcion!="1" y opcion!="0" Entonces
+					Escribir "escriba opción valida";
 				FinSi
+				si opcion="1" Entonces
+					vender(orden,clientes,contador);
+					si clientes[contador]!="null" Entonces
+						contador=contador+1;
+					FinSi
+				FinSi
+				Si ~validarEntero(opcion)Entonces
+					Escribir "Ingrese un valor numérico";
+				FinSi
+			Hasta Que (opcion="0" o contador=5)//correspondiente al numero de clientes
+			//agregar opcion para hacer display de informacion con otra opcion: 2)mostrar informacion
+		Hasta Que opcion="0";
+		
+		display(orden, clientes, 9,5);
+		
+		Repetir		
+			Escribir "1)Reiniciar Programa 0)Cerrar Definitivamente";
+			Leer finish;
+			Si finish = "1" Entonces
+				inicializarM(orden,9,2,5);
+				para i <- 0 hasta 4 Con Paso 1 hacer 
+					clientes[i]="null";
+				FinPara
 			FinSi
-			Si ~validarEntero(opcion)Entonces
+			
+			si finish!="1" y finish!="0" Entonces
+				Escribir "escriba opción valida";
+			FinSi		
+			Si ~validarEntero(finish)Entonces
 				Escribir "Ingrese un valor numérico";
 			FinSi
-		Hasta Que (opcion="0" o contador=5)//correspondiente al numero de clientes
-		//agregar opcion para hacer display de informacion con otra opcion: 2)mostrar informacion
-	Hasta Que opcion="0";
-	escribirArrayN(clientes,5);
-	escribirTablaNx2xM(orden,9,5);	
-	//Esperar Tecla;
-	display(orden, clientes, 9,5);
+		Hasta Que finish="0" O finish = "1"
+	Hasta Que finish="0"
 	
 FinProceso
-//hace un display de información que contiene un array pedido
 
-Funcion escribirArrayN(array,N)
-	Definir i como entero;
-	i=0;
-	Repetir
-		Escribir array[i];
-		i=i+1;
-	Hasta Que i=N
-FinFuncion
 Funcion vender(orden,cliente,k)
 	Dimension mensaje[9],tiempo[6];
 	Definir mensaje,nombre, auxorden como cadena;
@@ -70,8 +80,7 @@ Funcion vender(orden,cliente,k)
 	mensaje[3]="¿Quiere queso? 1)si 0)no";
 	mensaje[4]="¿Quiere carne, pollo o lomo? 1)carne 2)pollo 3)lomo 0)nada";
 	mensaje[5]="Ingrese precio unitario";
-	mensaje[6]="Ingrese cantidad de hamburguesas";//////////////////////////////////
-	///////////////////////////////////////////////////////////
+	mensaje[6]="Ingrese cantidad de hamburguesas";
 	mensaje[7]="Que medio de pago usa: 1)tarjeta 2)redcompra 3)efectivo 0)cancelar pedido";
 	mensaje[8]="Ingrese efectivo";
 	tiempo[0]=2;
@@ -177,7 +186,7 @@ Funcion vender(orden,cliente,k)
 						Escribir "El monto ingresado es menor al costo de sus productos. Sera redirigido al metodo de pago";
 						Escribir "-----------------------------------------------------";
 					FinSi
-				Hasta Que orden[i,0,k]>(orden[5,0,k]*orden[6,0,k]) o i=6
+				Hasta Que orden[i,0,k]>=(orden[5,0,k]*orden[6,0,k]) o i=6
 			SiNo
 				orden[i,0,k]=(orden[5,0,k]*orden[6,0,k]);
 			FinSi
@@ -191,23 +200,8 @@ Funcion vender(orden,cliente,k)
 	SiNo
 		resetear(orden, k);
 	FinSi	
-	
-	
-	
 FinFuncion
-Funcion escribirTablaNx2xM(array,N,M)
-	Definir i,j como entero;
-	i=0;
-	j=0;
-	para j<-0 hasta M-1 con paso 1 hacer
-		escribir "CLIENTE ",j;
-		para i<-0 hasta N-1 con paso 1 hacer
-			Escribir array[i,0,j]," ",array[i,1,j];
-		FinPara
-		
-	FinPara
-	
-FinFuncion
+
 //sean x, y, z dimensiones
 //inicializa con ceros
 Funcion inicializarM(M,x,ye,z)
@@ -257,6 +251,7 @@ Funcion string<-ingredientes(array,k)
 		FinSi
 	FinPara
 FinFuncion
+
 //array: arreglo de orden
 //L: largo del array
 //k: numero de cliente
@@ -267,55 +262,100 @@ Funcion atime<-time(array,L,k)
 	para i<- 0 hasta L-1 con paso 1 hacer
 		atime=atime+array[i,1,k];
 	FinPara
+	atime=atime*array[6,0,k];
 FinFuncion
+
 //array: arreglo de orden del estilo orden[X,Y,Z] con tres dimesiones
 //cliente: array con nombres de clientes
 //La: largo array orden
 //Lc: largo de array de clientes
 //metodo que despliega la información de todas las ventas hasta el momento
 Funcion display(array,cliente,La,Lc)
-	Definir i,t,tiempok,tmax, cantidad como entero;
+	Definir i,t,tiempok,tmax, cantidad,n como entero;
+	Dimension estado[5];
 	Definir estado Como Caracter;
-	
 	t=0;
 	tmax=0;
 	tiempok=0;
 	
-	Escribir "-----------------------";
-	Escribir "COMIDA RAPIDA FAST FOOD";
-	Escribir "-----------------------";
+	
 	Repetir
 		i=0;
+		Escribir "-----------------------";
+		Escribir "COMIDA RAPIDA FAST FOOD";
+		Escribir "-----------------------";
 		repetir
 			//Escribir i;
 			si cliente[i] != "null" entonces
 				tiempok=time(array,La,i);
+				//Escribir tiempok, " ", cliente[i];
 				cantidad=array[6,0,i];
 				Escribir "Pedido: ",cliente[i];
 				Escribir "Hamburguesa: ", ingredientes(array,i);
 				Escribir "cantidad: ", cantidad;
-				Escribir "Tiempo de espera: ", (tiempok*cantidad), " segundos";
+				Escribir "Tiempo de espera: ", (tiempok), " segundos";
 				si t>=tiempok Entonces
-					estado="listo";
+					estado[i] = "listo";	
+					
+					Si t>=(tiempok+1) Entonces
+						estado[i] = "entregado";
+					FinSi
+					
 				SiNo
-					estado="curso";
+					estado[i] = "curso";
 				FinSi
-				Escribir "Estado: ", estado;
+				Escribir "Estado: ", estado[i];
 				Escribir "----------------------------------------";
 			FinSi
 			i=i+1;
 			si tiempok>tmax entonces
 				tmax=tiempok;
 			FinSi
+			
 		Hasta Que i=Lc
-		t=t+1;
+		t=t+1;	
+		
+		n=0;		
+		Para n <- 0 hasta 4 Con Paso 1 hacer
+			si cliente[n] != "null" Entonces
+				si estado[n]="listo" o estado[n] = "entregado" Entonces
+					displayboleta(array, cliente,9, 5, n);					
+				FinSi	
+			FinSi
+			
+		FinPara
+		
 		Esperar 500 milisegundo;
-		Si t!=tmax+1 entonces
+		Si t<tmax+1 entonces
 			Borrar Pantalla;
 		FinSi
-		
-	Hasta Que t=tmax+1 
+	Hasta Que t=tmax+6 
 	
+FinFuncion
+
+Funcion displayboleta(array,cliente,La,Lc,i)
+	Definir t,tiempok,tmax, cantidad como entero;
+	Definir estado Como Caracter;
+	t=0;
+	tmax=0;
+	tiempok=0;	
+	
+	Escribir "-----------------------";
+	Escribir "COMIDA RAPIDA FAST FOOD";
+	Escribir "-----------------------";
+	tiempok=time(array,La,i);
+	cantidad=array[6,0,i];
+	Escribir "Pedido: ",cliente[i];
+	//Escribir "Hamburguesa: ", ingredientes(array,i);
+	Escribir cantidad, " Hamburguesas";
+	Escribir "Precio unitario: ",array(5,0,i);
+	Escribir "Total: ",array(5,0,i)*cantidad;
+	Escribir "Vuelto: ", array(8,0,i)-(array(5,0,i)*cantidad);
+	Escribir "";
+	Escribir "Gracias por su compra";
+	Escribir "";
+	Escribir "";
+	Escribir "----------------------------------------";
 FinFuncion
 
 //num: numero ingresado como caracter
